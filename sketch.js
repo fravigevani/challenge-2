@@ -33,8 +33,7 @@ function setup() {
         color(255, 150, 150),
         color(240, 70, 100)
       ]),
-      depth: depth,
-      swayOffset: random(1000) // per movimento indipendente del fiore (brezza)
+      depth: depth, swayOffset: random(1000) // per movimento indipendente del fiore (brezza)
     };
 
     // Evita che i fiori siano troppo vicini tra loro
@@ -53,38 +52,6 @@ function setup() {
   // Ordina i fiori in base alla profondità (dietro → davanti)
   flowers.sort((a, b) => a.depth - b.depth);
 }
-
-
-
-// DRAW — eseguito in loop ogni frame
-function draw() {
-  background(135, 206, 235); // cielo azzurro
-
-  // Prato verde
-  fill(90, 200, 90);
-  rect(0, height * 0.5, width, height * 0.5);
-
-  // Disegna tutti i fiori (dal fondo verso il fronte)
-  drawFlowers();
-
-  // Aggiorna e disegna api secondarie
-  if (frameCount % 180 === 0 && bees.length < 8) {
-    bees.push(newFlyingBee());
-  }
-
-  for (let i = bees.length - 1; i >= 0; i--) {
-    let b = bees[i];
-    b.update();
-    b.display();
-    if (b.isOffscreen()) bees.splice(i, 1);
-  }
-
-  // APE PRINCIPALE — disegnata per ultima (sempre in primo piano)
-  x = lerp(x, mouseX, 0.05); // movimento dolce verso il mouse
-  y = lerp(y, mouseY, 0.05);
-  drawBee(x, y, mouseX - x, mouseY - y);
-}
-
 
 // FUNZIONI PER I FIORI
 function drawFlowers() {
@@ -129,9 +96,8 @@ function drawPapavero(f, sway) {
   pop();
 }
 
-
 // API SECONDARIE — movimento semplice e casuale
-function newFlyingBee() {
+function FlyingBees() {
   let fromLeft = random() < 0.5; // direzione d’ingresso casuale
   let x = fromLeft ? -50 : width + 50;
   let y = random(height * 0.5, height * 0.9);
@@ -196,7 +162,6 @@ function newFlyingBee() {
   };
 }
 
-
 // APE PRINCIPALE — segue il mouse, sempre in primo piano
 function drawBee(x, y, dx, dy) {
   push();
@@ -229,3 +194,35 @@ function drawBee(x, y, dx, dy) {
 
   pop();
 }
+
+
+// DRAW — eseguito in loop ogni frame
+function draw() {
+  background(135, 206, 235); // cielo azzurro
+
+  // Prato verde
+  fill(90, 200, 90);
+  rect(0, height * 0.5, width, height * 0.5);
+
+  // Disegna tutti i fiori (dal fondo verso il fronte)
+  drawFlowers();
+
+  // Aggiorna e disegna api secondarie
+  if (frameCount % 180 === 0 && bees.length < 8) {
+    bees.push(FlyingBees());
+  }
+
+  for (let i = bees.length - 1; i >= 0; i--) {
+    let b = bees[i];
+    b.update();
+    b.display();
+    if (b.isOffscreen()) bees.splice(i, 1);
+  }
+
+  // APE PRINCIPALE — disegnata per ultima (sempre in primo piano)
+  x = lerp(x, mouseX, 0.05); // movimento dolce verso il mouse
+  y = lerp(y, mouseY, 0.05);
+  drawBee(x, y, mouseX - x, mouseY - y);
+}
+
+
